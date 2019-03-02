@@ -1,13 +1,15 @@
 package che.codes.weathersample.data
 
 import io.reactivex.Observable
-import java.util.*
 
 interface WeatherDataSource {
     fun fetchWeather(latitude: Double, longitude: Double): Observable<FetchResult>
 
     enum class FetchStatus {
-        SUCCESS
+        SUCCESS,
+        AUTH_ERROR,
+        GENERAL_ERROR,
+        NETWORK_ERROR
     }
 
     class FetchResult(status: FetchStatus, weather: WeatherInfo?) {

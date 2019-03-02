@@ -26,11 +26,13 @@ class WeatherProvider {
     private fun convertStatus(sourceStatus: WeatherDataSource.FetchStatus): FetchStatus {
         when (sourceStatus) {
             WeatherDataSource.FetchStatus.SUCCESS -> return FetchStatus.SUCCESS
+            else -> return FetchStatus.FAILURE
         }
     }
 
     enum class FetchStatus {
-        SUCCESS
+        SUCCESS,
+        FAILURE
     }
 
     class FetchResult(status: FetchStatus, weather: WeatherInfo?) {
