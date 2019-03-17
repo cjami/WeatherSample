@@ -1,4 +1,4 @@
-package che.codes.weathersample.data
+package che.codes.weathersample.data.location
 
 import io.reactivex.Observable
 

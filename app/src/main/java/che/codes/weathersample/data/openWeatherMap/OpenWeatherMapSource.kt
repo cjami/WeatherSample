@@ -1,9 +1,11 @@
-package che.codes.weathersample.data.openWeatherMap
+package che.codes.weathersample.data.openweathermap
 
 import che.codes.weathersample.data.WeatherDataSource
-import che.codes.weathersample.data.WeatherDataSource.*
+import che.codes.weathersample.data.WeatherDataSource.FetchResult
+import che.codes.weathersample.data.WeatherDataSource.FetchStatus
 import che.codes.weathersample.data.WeatherInfo
 import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -12,15 +14,17 @@ private const val HTTP_UNAUTHORIZED: Int = 401
 class OpenWeatherMapSource(val service: OpenWeatherMapService, val appId: String) : WeatherDataSource {
     override fun fetchWeather(latitude: Double, longitude: Double): Observable<FetchResult> {
         return Observable.create { subscriber ->
-            service.getWeatherData(latitude, longitude, appId).subscribe({ result ->
-                val weatherInfo = WeatherInfo(result.weather.main, result.main.temp)
-                subscriber.onNext(FetchResult(FetchStatus.SUCCESS, weatherInfo))
-                subscriber.onComplete()
-            },
-                { error ->
-                    subscriber.onNext(FetchResult(convertError(error), null))
+            service.getWeatherData(latitude, longitude, appId)
+                .subscribeOn(Schedulers.io())
+                .subscribe({ result ->
+                    val weatherInfo = WeatherInfo(result.weather[0].main, result.main.temp)
+                    subscriber.onNext(FetchResult(FetchStatus.SUCCESS, weatherInfo))
                     subscriber.onComplete()
-                })
+                },
+                    { error ->
+                        subscriber.onNext(FetchResult(convertError(error), null))
+                        subscriber.onComplete()
+                    })
         }
     }
 

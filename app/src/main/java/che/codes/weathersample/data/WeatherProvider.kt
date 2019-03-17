@@ -1,15 +1,13 @@
 package che.codes.weathersample.data
 
+import che.codes.weathersample.data.location.LocationProvider
 import io.reactivex.Observable
+import javax.inject.Inject
 
-class WeatherProvider {
-    var dataSource: WeatherDataSource
-    var locationProvider: LocationProvider
-
-    constructor(dataSource: WeatherDataSource, locationProvider: LocationProvider) {
-        this.dataSource = dataSource
-        this.locationProvider = locationProvider
-    }
+class WeatherProvider @Inject constructor(
+    private val dataSource: WeatherDataSource,
+    private val locationProvider: LocationProvider
+) {
 
     fun fetchWeather(): Observable<FetchResult> {
         // When subscribed to, fetches location, then fetches weather with given location
@@ -35,8 +33,5 @@ class WeatherProvider {
         FAILURE
     }
 
-    class FetchResult(status: FetchStatus, weather: WeatherInfo?) {
-        val status: FetchStatus = status
-        val weather: WeatherInfo? = weather
-    }
+    class FetchResult(val status: FetchStatus, val weather: WeatherInfo?)
 }

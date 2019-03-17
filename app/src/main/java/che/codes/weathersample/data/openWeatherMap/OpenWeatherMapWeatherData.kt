@@ -1,7 +1,7 @@
-package che.codes.weathersample.data.openWeatherMap
+package che.codes.weathersample.data.openweathermap
 
 class OpenWeatherMapWeatherData {
-    var weather: Weather = Weather()
+    var weather: Array<Weather> = arrayOf()
     var main: Main = Main()
 
     class Weather {

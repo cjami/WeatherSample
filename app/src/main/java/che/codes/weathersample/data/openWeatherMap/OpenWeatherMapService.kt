@@ -1,4 +1,4 @@
-package che.codes.weathersample.data.openWeatherMap
+package che.codes.weathersample.data.openweathermap
 
 import io.reactivex.Observable
 import retrofit2.http.GET

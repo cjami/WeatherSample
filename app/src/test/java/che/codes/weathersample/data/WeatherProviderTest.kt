@@ -1,6 +1,7 @@
 package che.codes.weathersample.data
 
 import che.codes.weathersample.data.WeatherProvider.FetchResult
+import che.codes.weathersample.data.location.LocationProvider
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever

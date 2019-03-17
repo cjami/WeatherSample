@@ -1,11 +1,12 @@
-package che.codes.weathersample.data.openWeatherMap
+package che.codes.weathersample.data.openweathermap
 
 import che.codes.weathersample.data.WeatherDataSource
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
 import okhttp3.ResponseBody
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -133,7 +134,6 @@ class OpenWeatherMapSourceTest {
     //region Helper Methods
 
     private fun getResult(observable: Observable<WeatherDataSource.FetchResult>): WeatherDataSource.FetchResult{
-        val observable: Observable<WeatherDataSource.FetchResult> = sut.fetchWeather(LAT, LON)
         val testObserver: TestObserver<WeatherDataSource.FetchResult> = observable.test()
         testObserver.awaitTerminalEvent()
         return testObserver.values()[0]
@@ -141,7 +141,8 @@ class OpenWeatherMapSourceTest {
 
     private fun success() {
         val weatherData = OpenWeatherMapWeatherData()
-        weatherData.weather.main = WEATHER_NAME
+        weatherData.weather = arrayOf(OpenWeatherMapWeatherData.Weather())
+        weatherData.weather[0].main = WEATHER_NAME
         weatherData.main.temp = WEATHER_TEMP
 
         whenever(openWeatherMapServiceMock.getWeatherData(any(), any(), any())).thenReturn(

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">WeatherSample</string>
+    <string name="fetching">FETCHING</string>
+    <string name="failure">ERROR</string>
 </resources>
