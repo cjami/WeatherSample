@@ -1,1 +1,3 @@
 WeatherSample
+
+![Screenshots](screenshots.png)
