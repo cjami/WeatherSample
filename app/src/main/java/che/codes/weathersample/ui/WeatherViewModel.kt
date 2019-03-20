@@ -12,11 +12,7 @@ class WeatherViewModel @Inject constructor(private val weatherProvider: WeatherP
     val result = MutableLiveData<Result>()
     private val disposables = CompositeDisposable()
 
-    init {
-        fetchWeather()
-    }
-
-    private fun fetchWeather() {
+    fun fetchWeather() {
         disposables.add(weatherProvider.fetchWeather()
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {

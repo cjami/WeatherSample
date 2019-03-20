@@ -29,7 +29,7 @@ class GpsLocationProvider @Inject constructor(private val context: Context) :
                     // TODO: Handle case where location is null
                 }
             } else {
-                Log.e("GpsLocationProvider", "Permission ACCESS_COARSE_LOCATION not granted")
+                Log.e("GpsLocationProvider", "Permission ACCESS_FINE_LOCATION not granted")
             }
         }
     }
