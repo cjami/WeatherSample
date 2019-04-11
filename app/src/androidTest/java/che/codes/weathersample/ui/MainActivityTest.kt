@@ -25,10 +25,11 @@ import che.codes.weathersample.di.component.WeatherAppComponent
 import che.codes.weathersample.di.module.ContextModule
 import che.codes.weathersample.di.module.NetworkModule
 import che.codes.weathersample.di.module.ViewModelFactoryModule
-import com.jakewharton.espresso.OkHttp3IdlingResource
+import com.squareup.rx2.idler.Rx2Idler
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import io.reactivex.android.schedulers.AndroidSchedulers
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -43,7 +44,6 @@ import org.junit.runner.RunWith
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Inject
 import javax.inject.Singleton
 
 private const val HIGH_TEMP_KELVIN = 303.15F
@@ -58,12 +58,8 @@ class MainActivityTest {
     val locationPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)!!
 
     private lateinit var mockServer: MockWebServer
-    private lateinit var networkIdlingResource: IdlingResource // We use this to handle async network calls
-
-    @Inject
-    lateinit var client: OkHttpClient
-
-    lateinit var context: Context
+    private lateinit var callbackIdlingResource: IdlingResource // We use this to handle async network calls
+    private lateinit var context: Context
 
     @Before
     fun setUp() {
@@ -77,11 +73,11 @@ class MainActivityTest {
             .contextModule(ContextModule(app))
             .build()
         app.component = component
-        component.inject(this)
 
         context = app
 
-        networkIdlingResource = OkHttp3IdlingResource.create("OkHttp", client)
+        // We assume that any returning network call is called back on the main thread scheduler
+        callbackIdlingResource = Rx2Idler.wrap(AndroidSchedulers.mainThread(), "Android Main Thread Scheduler")
     }
 
     @After
@@ -105,19 +101,19 @@ class MainActivityTest {
     @Test
     fun afterFetching_onSuccess_showsCorrectText() {
         success()
-        registerNetworkIdling()
+        registerCallbackIdling()
 
         activityRule.launchActivity(null)
 
         Espresso.onView((withId(R.id.main_text))).check((matches(withText("CLOUDS"))))
 
-        unregisterNetworkIdling()
+        unregisterCallbackIdling()
     }
 
     @Test
     fun afterFetching_onSuccess_showsCorrectColor() {
         success()
-        registerNetworkIdling()
+        registerCallbackIdling()
 
         activityRule.launchActivity(null)
 
@@ -128,57 +124,57 @@ class MainActivityTest {
 
         Espresso.onView((withId(R.id.background))).check(matches(withColor(correctColor)))
 
-        unregisterNetworkIdling()
+        unregisterCallbackIdling()
     }
 
     @Test
     fun afterFetching_onAuthError_showsFailureText() {
         authError()
-        registerNetworkIdling()
+        registerCallbackIdling()
 
         activityRule.launchActivity(null)
 
         Espresso.onView((withId(R.id.main_text))).check((matches(withText(R.string.failure))))
 
-        unregisterNetworkIdling()
+        unregisterCallbackIdling()
     }
 
     @Test
     fun afterFetching_onAuthError_showsDefaultColor() {
         authError()
-        registerNetworkIdling()
+        registerCallbackIdling()
 
         activityRule.launchActivity(null)
 
         val defaultColor = context.getColor(R.color.def)
         Espresso.onView((withId(R.id.background))).check(matches(withColor(defaultColor)))
 
-        unregisterNetworkIdling()
+        unregisterCallbackIdling()
     }
 
     @Test
     fun afterFetching_onServerError_showsFailureText() {
         serverError()
-        registerNetworkIdling()
+        registerCallbackIdling()
 
         activityRule.launchActivity(null)
 
         Espresso.onView((withId(R.id.main_text))).check((matches(withText(R.string.failure))))
 
-        unregisterNetworkIdling()
+        unregisterCallbackIdling()
     }
 
     @Test
     fun afterFetching_onServerError_showsDefaultColor() {
         serverError()
-        registerNetworkIdling()
+        registerCallbackIdling()
 
         activityRule.launchActivity(null)
 
         val defaultColor = context.getColor(R.color.def)
         Espresso.onView((withId(R.id.background))).check(matches(withColor(defaultColor)))
 
-        unregisterNetworkIdling()
+        unregisterCallbackIdling()
     }
 
     //region Helper Classes and Methods
@@ -207,12 +203,12 @@ class MainActivityTest {
         return inputStream.bufferedReader().use { it.readText() }
     }
 
-    private fun registerNetworkIdling() {
-        IdlingRegistry.getInstance().register(networkIdlingResource)
+    private fun registerCallbackIdling() {
+        IdlingRegistry.getInstance().register(callbackIdlingResource)
     }
 
-    private fun unregisterNetworkIdling() {
-        IdlingRegistry.getInstance().unregister(networkIdlingResource)
+    private fun unregisterCallbackIdling() {
+        IdlingRegistry.getInstance().unregister(callbackIdlingResource)
     }
 
     private fun withColor(color: Int): Matcher<View> {
