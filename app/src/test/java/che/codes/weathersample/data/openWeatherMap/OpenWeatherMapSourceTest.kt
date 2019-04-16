@@ -33,8 +33,6 @@ class OpenWeatherMapSourceTest {
 
     @Test
     fun fetchWeather_givenAppId_appIdPassedToService() {
-        sut.fetchWeather(LAT, LON)
-
         val observable: Observable<WeatherDataSource.FetchResult> = sut.fetchWeather(LAT, LON)
         val testObserver: TestObserver<WeatherDataSource.FetchResult> = observable.test()
         testObserver.awaitTerminalEvent()
@@ -46,8 +44,6 @@ class OpenWeatherMapSourceTest {
     fun fetchWeather_onSuccess_returnSuccess() {
         success()
 
-        sut.fetchWeather(LAT, LON)
-
         val result = getResult(sut.fetchWeather(LAT, LON))
 
         assertEquals(result.status, WeatherDataSource.FetchStatus.SUCCESS)
@@ -56,8 +52,6 @@ class OpenWeatherMapSourceTest {
     @Test
     fun fetchWeather_onSuccess_returnCorrectWeatherInfo() {
         success()
-
-        sut.fetchWeather(LAT, LON)
 
         val result = getResult(sut.fetchWeather(LAT, LON))
 
@@ -69,8 +63,6 @@ class OpenWeatherMapSourceTest {
     fun fetchWeather_onAuthError_returnAuthError() {
         authError()
 
-        sut.fetchWeather(LAT, LON)
-
         val result = getResult(sut.fetchWeather(LAT, LON))
 
         assertEquals(result.status, WeatherDataSource.FetchStatus.AUTH_ERROR)
@@ -79,8 +71,6 @@ class OpenWeatherMapSourceTest {
     @Test
     fun fetchWeather_onAuthError_nullWeatherInfoReturned() {
         authError()
-
-        sut.fetchWeather(LAT, LON)
 
         val result = getResult(sut.fetchWeather(LAT, LON))
 
@@ -91,8 +81,6 @@ class OpenWeatherMapSourceTest {
     fun fetchWeather_onGeneralError_returnGeneralError() {
         generalError()
 
-        sut.fetchWeather(LAT, LON)
-
         val result = getResult(sut.fetchWeather(LAT, LON))
 
         assertEquals(result.status, WeatherDataSource.FetchStatus.GENERAL_ERROR)
@@ -101,8 +89,6 @@ class OpenWeatherMapSourceTest {
     @Test
     fun fetchWeather_onGeneralError_nullWeatherInfoReturned() {
         generalError()
-
-        sut.fetchWeather(LAT, LON)
 
         val result = getResult(sut.fetchWeather(LAT, LON))
 
@@ -113,8 +99,6 @@ class OpenWeatherMapSourceTest {
     fun fetchWeather_onNetworkError_returnNetworkError() {
         networkError()
 
-        sut.fetchWeather(LAT, LON)
-
         val result = getResult(sut.fetchWeather(LAT, LON))
 
         assertEquals(result.status, WeatherDataSource.FetchStatus.NETWORK_ERROR)
@@ -123,8 +107,6 @@ class OpenWeatherMapSourceTest {
     @Test
     fun fetchWeather_onNetworkError_nullWeatherInfoReturned() {
         networkError()
-
-        sut.fetchWeather(LAT, LON)
 
         val result = getResult(sut.fetchWeather(LAT, LON))
 
